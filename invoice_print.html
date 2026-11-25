@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEDAXIS Hospital Invoice - {{ bill.bill_id }}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      padding: 30px 15px;
+    }
+
+    .print-bar {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+
+      .print-bar {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="print-bar">
+    <a href="/" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Return to MEDAXIS Portal</a>
+    <button onclick="window.print()" class="btn btn-primary"><i class="fa-solid fa-print"></i> Print Official
+      Receipt</button>
+  </div>
+
+  <div class="printable-invoice">
+    <!-- Header Branding -->
+    <div class="invoice-header">
+      <div class="invoice-hospital-brand">
+        <div class="invoice-logo-icon">
+          <i class="fa-solid fa-staff-snake"></i>
+        </div>
+        <div class="invoice-hospital-info">
+          <h2>MEDAXIS HOSPITAL</h2>
+          <div class="hosp-tagline">Smart Hospital Management & Super Speciality Care</div>
+          <div class="hosp-address">
+            Plot 14-B, Medical Enclave, BKC Road, Bandra East, Mumbai, Maharashtra 400051<br>
+            Emergency: 1800-MEDAXIS | 📞 +91 (022) 6789-0100 | ✉️ billing@medaxis.in<br>
+            <strong>GSTIN:</strong> 27AAAAA0000A1Z5 | <strong>NABH & ISO 9001:2015 Accredited</strong>
+          </div>
+        </div>
+      </div>
+      <div class="invoice-doc-title">
+        <h3>OFFICIAL RECEIPT</h3>
+        <div class="bill-meta-line"><strong>Bill No:</strong> <span
+            style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #0284c7;">{{ bill.bill_id
+            }}</span></div>
+        <div class="bill-meta-line"><strong>Date:</strong> {{ bill.payment_date or bill.created_at[:10] }}</div>
+        <div class="bill-meta-line"><strong>Counter:</strong> Admin Central Desk 01</div>
+      </div>
+    </div>
+
+    <!-- Patient & Clinical Details Grid -->
+    <div class="invoice-details-grid">
+      <div class="invoice-info-box">
+        <h4>PATIENT INFORMATION</h4>
+        <p><strong>Name:</strong> {{ bill.patient_name }}</p>
+        <p><strong>Patient ID:</strong> <span style="font-family: 'JetBrains Mono', monospace;">{{ bill.patient_id
+            }}</span></p>
+        <p><strong>Demographics:</strong> {{ bill.patient_age }} Years / {{ bill.patient_gender }} | Blood: {{
+          bill.patient_blood_group }}</p>
+        <p><strong>Phone:</strong> +91 {{ bill.patient_mobile }}</p>
+        <p><strong>Address:</strong> {{ bill.patient_address }}, {{ bill.patient_city }}, {{ bill.patient_state }} - {{
+          bill.patient_pincode }}</p>
+      </div>
+      <div class="invoice-info-box">
+        <h4>CLINICAL & BILLING PARTICULARS</h4>
+        <p><strong>Consulting Specialist:</strong> {{ bill.doctor_name or 'Hospital Inpatient & Outpatient Faculty' }}
+        </p>
+        <p><strong>Department:</strong> {{ bill.department_name or 'Multi-Disciplinary' }}</p>
+        <p><strong>Payment Mode:</strong> <span style="font-weight: 700;">{{ bill.payment_method }}</span></p>
+        <p><strong>Payment Status:</strong> <span
+            class="{% if bill.payment_status == 'Paid' %}payment-paid{% else %}payment-unpaid{% endif %}"
+            style="font-weight: 700;">{{
+            bill.payment_status }}</span></p>
+        <p><strong>Billing Category:</strong> General Outpatient / Care Package</p>
+      </div>
+    </div>
+
+    <!-- Itemized Table -->
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th style="width: 45px;">#</th>
+          <th>Service / Charge Description</th>
+          <th>Category</th>
+          <th style="width: 70px;" class="text-right">Qty</th>
+          <th style="width: 100px;" class="text-right">Rate (₹)</th>
+          <th style="width: 110px;" class="text-right">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if bill['items'] and bill['items']|length > 0 %}
+        {% for item in bill['items'] %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><strong>{{ item.description }}</strong></td>
+          <td><span class="badge badge-neutral" style="font-size: 0.7rem;">{{ item.item_type }}</span></td>
+          <td class="text-right">{{ item.quantity }}</td>
+          <td class="text-right">₹{{ "%.2f"|format(item.unit_price) }}</td>
+          <td class="text-right" style="font-weight: 600;">₹{{ "%.2f"|format(item.amount) }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        {% if bill.consultation_fee > 0 %}
+        <tr>
+          <td>1</td>
+          <td>Physician Consultation Fee</td>
+          <td>Consultation</td>
+          <td class="text-right">1</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.consultation_fee) }}</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.consultation_fee) }}</td>
+        </tr>
+        {% endif %}
+        {% if bill.lab_charges > 0 %}
+        <tr>
+          <td>2</td>
+          <td>Diagnostic Laboratory Investigation Charges</td>
+          <td>Laboratory</td>
+          <td class="text-right">1</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.lab_charges) }}</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.lab_charges) }}</td>
+        </tr>
+        {% endif %}
+        {% if bill.medicine_charges > 0 %}
+        <tr>
+          <td>3</td>
+          <td>Pharmacy Prescription & Medical Supplies</td>
+          <td>Pharmacy</td>
+          <td class="text-right">1</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.medicine_charges) }}</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.medicine_charges) }}</td>
+        </tr>
+        {% endif %}
+        {% if bill.other_charges > 0 %}
+        <tr>
+          <td>4</td>
+          <td>Hospital Facility & Nursing Charges</td>
+          <td>Other</td>
+          <td class="text-right">1</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.other_charges) }}</td>
+          <td class="text-right">₹{{ "%.2f"|format(bill.other_charges) }}</td>
+        </tr>
+        {% endif %}
+        {% endif %}
+      </tbody>
+    </table>
+
+    <!-- Totals and Payment Stamp -->
+    <div class="invoice-totals-wrapper">
+      <div
+        class="payment-stamp-box {% if bill.payment_status == 'Paid' %}paid{% elif bill.payment_status == 'Pending' %}pending{% else %}partially-paid{% endif %}">
+        <div class="stamp-status">{{ bill.payment_status }}</div>
+        <div class="stamp-mode">Via {{ bill.payment_method }}</div>
+        <div style="font-size: 9px; margin-top: 4px; color: inherit;">MEDAXIS TREASURY AUTH</div>
+      </div>
+
+      <div class="invoice-totals-table">
+        <div class="totals-row">
+          <span>Subtotal Gross:</span>
+          <span>₹{{ "%.2f"|format((bill.consultation_fee or 0) + (bill.lab_charges or 0) + (bill.medicine_charges or 0)
+            + (bill.other_charges or 0)) }}</span>
+        </div>
+        {% if bill.discount > 0 %}
+        <div class="totals-row" style="color: #047857;">
+          <span>Concession / Discount:</span>
+          <span>- ₹{{ "%.2f"|format(bill.discount) }}</span>
+        </div>
+        {% endif %}
+        <div class="totals-row grand-total">
+          <span>Net Total Payable:</span>
+          <span>₹{{ "%.2f"|format(bill.total_amount) }}</span>
+        </div>
+        <div class="totals-row">
+          <span>Amount Received:</span>
+          <span style="font-weight: 700; color: #047857;">₹{{ "%.2f"|format(bill.paid_amount) }}</span>
+        </div>
+        {% if (bill.total_amount - bill.paid_amount) > 0 %}
+        <div class="totals-row" style="color: #b45309; font-weight: 700;">
+          <span>Balance Due:</span>
+          <span>₹{{ "%.2f"|format(bill.total_amount - bill.paid_amount) }}</span>
+        </div>
+        {% endif %}
+        <div class="amount-in-words">
+          Total in figures: <strong>₹{{ "%.2f"|format(bill.total_amount) }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer & Authorized Signatures -->
+    <div class="invoice-footer-section">
+      <div class="invoice-disclaimer">
+        1. This is a computer-generated tax invoice and requires no physical seal under IT Act.<br>
+        2. Medicines once dispensed can only be refunded if in unopened cold-chain pack.<br>
+        3. For health insurance claim queries, please email tpa@medaxis.in with Bill No.
+      </div>
+      <div class="invoice-signature-box">
+        <div class="sig-line"></div>
+        <div class="sig-title">Authorized Accounts Officer</div>
+        <div class="sig-sub">MEDAXIS Super Speciality Hospital</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

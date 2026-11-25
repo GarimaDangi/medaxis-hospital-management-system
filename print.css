@@ -1,0 +1,331 @@
+/*
+  MEDAXIS - Hospital Management System
+  Printable Hospital Invoice / Receipt Stylesheet
+*/
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide UI elements during print */
+  .sidebar,
+  .topbar,
+  .modal-header,
+  .modal-footer,
+  .btn,
+  .toast-container,
+  .view-header-actions,
+  .sub-tab-btn,
+  .search-input-wrapper {
+    display: none !important;
+  }
+
+  .main-wrapper {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .content-area {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .modal-backdrop {
+    position: static !important;
+    background: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+
+  .modal-dialog {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .modal-body {
+    padding: 0 !important;
+  }
+
+  .printable-invoice {
+    border: none !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+    page-break-after: avoid;
+  }
+}
+
+/* Screen and Modal Invoice Display */
+.printable-invoice {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1e293b;
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #0284c7;
+  margin-bottom: 24px;
+}
+
+.invoice-hospital-brand {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.invoice-logo-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.invoice-hospital-info h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.invoice-hospital-info .hosp-tagline {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0d9488;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.invoice-hospital-info .hosp-address {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.invoice-doc-title {
+  text-align: right;
+}
+
+.invoice-doc-title h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0284c7;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.invoice-doc-title .bill-meta-line {
+  font-size: 12px;
+  color: #475569;
+  margin-top: 3px;
+}
+
+.invoice-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+}
+
+.invoice-info-box h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #0284c7;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.invoice-info-box p {
+  font-size: 12px;
+  color: #1e293b;
+  margin: 3px 0;
+  line-height: 1.4;
+}
+
+.invoice-info-box p strong {
+  color: #0f172a;
+}
+
+/* Itemized Charges Table */
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+}
+
+.invoice-table th {
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.invoice-table th.text-right,
+.invoice-table td.text-right {
+  text-align: right;
+}
+
+.invoice-table td {
+  padding: 10px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.invoice-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Totals Box */
+.invoice-totals-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.payment-stamp-box {
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed;
+  min-width: 160px;
+}
+
+.payment-stamp-box.paid {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.payment-stamp-box.pending {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+.payment-stamp-box.partially-paid {
+  border-color: #6366f1;
+  background-color: #eef2ff;
+  color: #4338ca;
+}
+
+.stamp-status {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.stamp-mode {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.invoice-totals-table {
+  width: 300px;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+.totals-row.grand-total {
+  border-top: 2px solid #0f172a;
+  padding-top: 8px;
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.amount-in-words {
+  font-size: 11px;
+  font-style: italic;
+  color: #64748b;
+  margin-top: 6px;
+  background: #f1f5f9;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+/* Footer Signatures */
+.invoice-footer-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 30px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 20px;
+}
+
+.invoice-disclaimer {
+  font-size: 10px;
+  color: #94a3b8;
+  max-width: 420px;
+  line-height: 1.4;
+}
+
+.invoice-signature-box {
+  text-align: center;
+}
+
+.sig-line {
+  width: 180px;
+  border-top: 1px solid #475569;
+  margin-bottom: 6px;
+}
+
+.sig-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sig-sub {
+  font-size: 10px;
+  color: #64748b;
+}
